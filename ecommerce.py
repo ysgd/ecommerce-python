@@ -56,7 +56,7 @@ def login():
           elif user_operation == 'purchase':
             purchase(username)
           elif user_operation == 'view bills':
-            view_bills()
+            view_bills(username)   
           else:
             print('invalid operation')
           
@@ -65,11 +65,11 @@ def login():
           print('what would you like to do?')
           user_operation = input('add product/ view product/ view bills: ').lower()
           if user_operation == 'add product' or user_operation =='add products':
-            add_product()
-          elif user_operation == 'view products' or user_operation== 'view add_product':
-            view_products()
+            add_product(username)
+          elif user_operation == 'view products' or user_operation== 'view product':
+            view_seller_products(username)
           elif user_operation == 'view bills':
-            view_bills()
+            view_bills(username)
           else:
             print('invalid operation')   
     else:
@@ -85,6 +85,18 @@ def view_products(username):
     print(i)
     
   purchase(username)
+  
+def view_seller_products(username):
+  f = open('F:/Python/ecommerce/file/products.txt','r')
+  json_data = f.read()
+  f.close()
+  list_seller_product = json_data.split('-')
+  for i in list_seller_product:
+    if i != '':
+      dict_data = json.loads(i)
+      if username == dict_data.get('seller'):
+        print(f"{dict_data}")
+  
 
 def purchase(username):
   purchase_product_name = input('Which product do you want to buy? ')
@@ -103,7 +115,7 @@ def purchase(username):
   for i in list_product_data:
         if i != '':
             dict_data = json.loads(i)
-            if purchase_product_name == dict_data['purchase_product_name']:
+            if purchase_product_name == dict_data['product_name']:
                 stock = True
                 product_dict_data = dict_data
                 price = int(dict_data['product_price'])
@@ -111,41 +123,43 @@ def purchase(username):
     
 
   if stock == True:
-        print(f"Purchase of {purchase_product_name} completed!")
-        total = purchase_quantity * price
-        print(f'Your total is {total}')
+      print(f"Purchase of {purchase_product_name} completed!")
+      total = purchase_quantity * price
+      print(f'Your total is {total}')
         
-        bill_data = {'buyer': username, 'product_name': product_dict_data.get(purchase_product_name), 'quantity': purchase_quantity, 'product_price': product_dict_data.get('product_price'), 'total': total}
-        json_bill_data = json.dumps(bill_data)
-        f = open('F:/Python/ecommerce/file/bill.txt','a')
-        f.write(json_bill_data)
-        f.close()
+      bill_data = {'buyer': username, 'product_name': product_dict_data.get(purchase_product_name), 'quantity': purchase_quantity, 'product_price': product_dict_data.get('product_price'), 'total': total}
+      json_bill_data = json.dumps(bill_data)
+      f = open('F:/Python/ecommerce/file/bill.txt','a')
+      f.write(json_bill_data)
+      f.close()
+      
+      purchase_bill = input('would you like to view your bill? [y/n]: ').lower()
+      if purchase_bill == 'y':
+        view_bills(username)
+      else:
+        print('Thank you for purchasing the product')
   else: 
-        print(f"Product with name {purchase_product_name} not available!")
-        purchase(username)
+      print(f"Product with name {purchase_product_name} noavailable!")
+      purchase(username)
+      
         
-        purchase_bill = input('would you like to view your bill? [y/n]: ').lower()
-        if purchase_bill == 'y':
-          view_bills()
-        else:
-          print('Thank you for purchasing the product')
-        
- 
-        
-
-def view_bills():
+def view_bills(username):
   f = open('F:/Python/ecommerce/file/bill.txt','r')
   bill_json_data = f.read()
   f.close()
   bill_json_data = bill_json_data.split('-')
   for i in bill_json_data:
-      print(i)
+    if i != '':
+      dict_data =json.loads(i)
+      if username == dict_data.get('buyer'):
+        print(f"{dict_data}")
+        
 
-def add_product():
+def add_product(username):
   product_name = input('enter product name: ')
   product_description = input('enter product description: ')
   product_price = input('enter product price: ')
-  product_data = {"product_name": product_name, "product_description": product_description, "product_price": product_price}
+  product_data = {"product_name": product_name, "product_description": product_description, "product_price": product_price, 'seller':username}
   json_product_data = json.dumps(product_data)
   f = open('F:/Python/ecommerce/file/products.txt', 'a')
   f.write(json_product_data + '-')

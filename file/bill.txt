@@ -1,1 +1,1 @@
-{"buyer": "ram", "product": null, "quantity": 1, "product_price": "120000", "total": 120000}{"buyer": "ram", "product": null, "quantity": 2, "product_price": "30", "total": 60}
+{"buyer": "ram", "product_name": null, "quantity": 20, "product_price": "30", "total": 600}{"buyer": "hari", "product_name": null, "quantity": 2, "product_price": "200", "total": 400}
